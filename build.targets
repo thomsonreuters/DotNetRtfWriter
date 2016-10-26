@@ -1,0 +1,113 @@
+﻿<Project DefaultTargets="Run" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
+
+  <Import Project="packages\MSBuildTasks.1.5.0.196\build\MSBuildTasks.targets" />
+
+  <!-- Names -->
+  <PropertyGroup>
+    <ProjectName>DotNetRtfWriter</ProjectName>
+    <SolutionName>netrtfwriter</SolutionName>
+  </PropertyGroup>
+
+  <!-- Solution directory & file -->
+  <ItemGroup>
+    <SolutionDir Include=".\"></SolutionDir>
+    <DistDir Include="Build\"></DistDir>
+  </ItemGroup>
+
+  <Target Name="Initialize-Properties">
+    <!-- Solution & Projects -->
+    <PropertyGroup>
+      <Solution>%(SolutionDir.FullPath)$(SolutionName).sln</Solution>
+      <RtfWriter>%(SolutionDir.FullPath)RtfWriter\</RtfWriter>
+      <RtfWriterTests>%(SolutionDir.FullPath)RtfWriter.UnitTests\</RtfWriterTests>
+    </PropertyGroup>
+    
+    <!-- Build Properties -->
+    <PropertyGroup>
+      <ProjectDir>$(RtfWriter)</ProjectDir>
+      <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+      <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>      
+      <!-- Overwrite to retain the correct value -->      
+      <Platform>$(Platform)</Platform> 
+      <Snk>%(SolutionDir.FullPath)$(ProjectName).snk</Snk>
+    </PropertyGroup>
+
+    <!-- Packaging Properties -->
+    <PropertyGroup>
+      <OutputDirectory>%(DistDir.FullPath)$(Platform)\</OutputDirectory>
+    </PropertyGroup>    
+  </Target>  
+    
+  <Target Name="Clean">
+    <ItemGroup>
+      <ReleaseDir Include="$(RtfWriter)bin\$(Platform)\$(Configuration)" Condition="'$(Platform)' != ''" />
+      <ReleaseDir Include="$(RtfWriter)bin\$(Configuration)" Condition="'$(Platform)' == 'Any CPU'" />
+    </ItemGroup>
+    <RemoveDir Directories="@(ReleaseDir)" />
+  </Target>
+  
+  <Target Name="Build">
+    <MSBuild Projects="$(Solution)" Properties="Configuration=$(Configuration);Platform=$(Platform);SignAssembly=true;AssemblyOriginatorKeyFile=$(Snk)" />
+  </Target>
+
+  <Target Name="Copy">
+    <ItemGroup>
+      <SourceFiles Include="$(RtfWriter)bin\$(Platform)\$(Configuration)\*.*"  />
+    </ItemGroup>
+    <Copy DestinationFolder="$(OutputDirectory)" SourceFiles="@(SourceFiles)" />
+  </Target>
+  
+  <Target Name="UnitTests">
+    <Time Format="yyyy-MM-dd (HH-mm-ss)">
+      <Output TaskParameter="FormattedTime" PropertyName="CurrentDateTime" />
+    </Time>
+
+    <PropertyGroup>
+      <UnitTests>$(RtfWriterTests)\bin\$(Configuration)\RtfWriter.Tests.dll</UnitTests>
+      <UnitTestsResult>%(SolutionDir.FullPath)Test-Results\$(CurrentDateTime).trx</UnitTestsResult>
+    </PropertyGroup>
+
+    <MakeDir Directories="%(SolutionDir.FullPath)Test-Results" />
+    <Exec Command="mstest /testcontainer:$(UnitTests) /resultsfile:&quot;$(UnitTestsResult)&quot;" />
+  </Target>
+
+  <Target Name="Distribution" DependsOnTargets="Initialize-Properties; Clean; Build; Copy;">
+  </Target>
+
+  <Target Name="Run" DependsOnTargets="Test">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="Configuration=Release;Platform=x86" Targets="Distribution" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="Configuration=Release;Platform=x64" Targets="Distribution" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="Configuration=Release;Platform=x64" Targets="Zip" />
+  </Target>
+  
+  <Target Name="Zip">
+    <GetAssemblyIdentity AssemblyFiles="$(RtfWriter)bin\$(Platform)\$(Configuration)\$(ProjectName).dll">
+      <Output TaskParameter="Assemblies" ItemName="GetVersionAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <CreateProperty Value="$(ProjectName)(%(GetVersionAssemblyInfo.Version)).zip">
+      <Output TaskParameter="Value" PropertyName="ZipFileName"/>
+    </CreateProperty>
+    <CreateItem Include="%(DistDir.FullPath)**\*.*" Exclude="%(DistDir.FullPath)*.*">
+      <Output TaskParameter="Include" ItemName="ZipFiles"/>
+    </CreateItem>
+
+    <Zip Files="@(ZipFiles)" ZipFileName="%(DistDir.FullPath)$(ZipFileName)" WorkingDirectory="%(DistDir.FullPath)" />
+  </Target>
+  
+  <Target Name="Test">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="" Targets="Initialize-Properties; Clean; Build" />
+
+    <Time Format="yyyy-MM-dd (HH-mm-ss)">
+      <Output TaskParameter="FormattedTime" PropertyName="CurrentDateTime" />
+    </Time>
+
+    <PropertyGroup>
+      <UnitTests>$(RtfWriterTests)bin\$(Configuration)\RtfWriter.UnitTests.dll</UnitTests>
+      <UnitTestsResult>%(SolutionDir.FullPath)Test-Results\$(CurrentDateTime).trx</UnitTestsResult>
+    </PropertyGroup>
+
+    <MakeDir Directories="%(SolutionDir.FullPath)Test-Results" />
+    <Exec Command="mstest /testcontainer:$(UnitTests) /resultsfile:&quot;$(UnitTestsResult)&quot;" />
+  </Target>
+
+</Project>
