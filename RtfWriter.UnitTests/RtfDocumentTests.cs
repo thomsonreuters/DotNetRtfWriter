@@ -269,6 +269,39 @@ namespace RtfWriter.UnitTests
             Assert.AreEqual(rtfImage.ReadingDirection, ReadingDirection.LeftToRight);
             Assert.AreEqual(rtfSection.ReadingDirection, ReadingDirection.LeftToRight);
         }
+        [TestMethod]
+        public void RtfHeaderTest()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
+            AssertHelper.DoesNotThrowException(() => rtfDocument.Header.addParagraph());
+
+        }
+
+
+        [TestMethod]
+        public void RtfHeaderRendererTest()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
+            Assert.IsTrue(rtfDocument.Header.render().Length > 0);
+
+        }
+
+        [TestMethod]
+        public void RtfFooterTest()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
+            AssertHelper.DoesNotThrowException(() => rtfDocument.Footer.addParagraph());
+
+        }
+
+
+        [TestMethod]
+        public void RtfFooterRendererTest()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
+            AssertHelper.DoesNotThrowException(() => rtfDocument.Footer.render());
+
+        }
 
     }
 }
