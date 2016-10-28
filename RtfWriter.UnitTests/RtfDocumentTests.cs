@@ -1,5 +1,7 @@
 ﻿
 using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using Elistia.DotNetRtfWriter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -115,8 +117,17 @@ namespace RtfWriter.UnitTests
         {
             var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape,
                 new CultureInfo("en-US"));
-            var rtfImage = rtfDocument.addImage("../../Images/demo5.jpg", ImageFileType.Gif);
-            Assert.IsNotNull(rtfImage.Width);
+            using (
+                var stream =
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream("RtfWriter.UnitTests.Images.demo5.jpg"))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    var rtfImage = rtfDocument.addImage(memoryStream);
+                    Assert.IsNotNull(rtfImage.Width);
+                }
+            }
 
         }
 
@@ -125,10 +136,17 @@ namespace RtfWriter.UnitTests
         {
             var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape,
                 new CultureInfo("en-US"));
-            var rtfImage = rtfDocument.addImage("../../Images/demo5.jpg", ImageFileType.Gif);
-            var actualText = rtfImage.render();
-            Assert.IsTrue(actualText.Length > 0);
 
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RtfWriter.UnitTests.Images.demo5.jpg"))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    var rtfImage = rtfDocument.addImage(memoryStream);
+                    var actualText = rtfImage.render();
+                    Assert.IsTrue(actualText.Length > 0);
+                }
+            }
         }
 
 
@@ -214,16 +232,23 @@ namespace RtfWriter.UnitTests
             var rtfSection = rtfDocument.addSection(SectionStartEnd.Start, rtfDocument);
 
             //Add Image
-
-            var rtfImage = rtfDocument.addImage("../../Images/demo5.jpg", ImageFileType.Gif);
-
+            using (
+                var stream =
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream("RtfWriter.UnitTests.Images.demo5.jpg"))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    var rtfImage = rtfDocument.addImage(memoryStream);
+                    Assert.AreEqual(rtfImage.ReadingDirection, ReadingDirection.RightToLeft);
+                }
+            }
             //Get Particular cell in Table to test Direction
             var rtfTableCell = rtfTable.cell(0, 1);
 
             Assert.AreEqual(rtfParagraph.ReadingDirection, ReadingDirection.RightToLeft);
             Assert.AreEqual(rtfTable.ReadingDirection, ReadingDirection.RightToLeft);
             Assert.AreEqual(rtfTableCell.ReadingDirection, ReadingDirection.RightToLeft);
-            Assert.AreEqual(rtfImage.ReadingDirection, ReadingDirection.RightToLeft);
             Assert.AreEqual(rtfSection.ReadingDirection, ReadingDirection.RightToLeft);
 
 
@@ -258,7 +283,17 @@ namespace RtfWriter.UnitTests
 
             //Add Image
 
-            var rtfImage = rtfDocument.addImage("../../Images/demo5.jpg", ImageFileType.Gif);
+            using (
+      var stream =
+          Assembly.GetExecutingAssembly().GetManifestResourceStream("RtfWriter.UnitTests.Images.demo5.jpg"))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    var rtfImage = rtfDocument.addImage(memoryStream);
+                    Assert.AreEqual(rtfImage.ReadingDirection, ReadingDirection.LeftToRight);
+                }
+            }
 
             //Get Particular cell in Table to test Direction
             var rtfTableCell = rtfTable.cell(0, 1);
@@ -266,7 +301,7 @@ namespace RtfWriter.UnitTests
             Assert.AreEqual(rtfParagraph.ReadingDirection, ReadingDirection.LeftToRight);
             Assert.AreEqual(rtfTable.ReadingDirection, ReadingDirection.LeftToRight);
             Assert.AreEqual(rtfTableCell.ReadingDirection, ReadingDirection.LeftToRight);
-            Assert.AreEqual(rtfImage.ReadingDirection, ReadingDirection.LeftToRight);
+           
             Assert.AreEqual(rtfSection.ReadingDirection, ReadingDirection.LeftToRight);
         }
         [TestMethod]

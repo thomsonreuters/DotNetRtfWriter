@@ -186,7 +186,7 @@ namespace Elistia.DotNetRtfWriter
             {
                 throw new Exception("Image is not allowed.");
             }
-            RtfImage block = new RtfImage(imageStream);
+            RtfImage block = new RtfImage(imageStream, ReadingDirection);
             addBlock(block);
             return block;
         }
