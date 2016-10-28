@@ -4,6 +4,14 @@ using System.Configuration;
 namespace Elistia.DotNetRtfWriter
 {
     /// <summary>
+    /// Reading Direction 
+    /// </summary>
+    public enum ReadingDirection
+    {
+        LeftToRight,
+        RightToLeft
+    }
+    /// <summary>
     /// Horizontal alignment.
     /// </summary>
     public enum Align
@@ -25,7 +33,7 @@ namespace Elistia.DotNetRtfWriter
         Middle,
         Bottom,
     }
-    
+
     /// <summary>
     /// Top, bottom, left, and right.
     /// </summary>
@@ -36,7 +44,7 @@ namespace Elistia.DotNetRtfWriter
         Bottom,
         Left,
     }
-    
+
     /// <summary>
     /// Types of paper sizes.
     /// </summary>
@@ -46,7 +54,7 @@ namespace Elistia.DotNetRtfWriter
         A4,
         A3,
     }
-    
+
     /// <summary>
     /// Types of paper orientaion.
     /// </summary>
@@ -55,7 +63,7 @@ namespace Elistia.DotNetRtfWriter
         Portrait = 1,
         Landscape,
     }
-    
+
     /// <summary>
     /// Types of locality.
     /// </summary>
@@ -71,21 +79,21 @@ namespace Elistia.DotNetRtfWriter
         SimplifiedChinese = 2052,
         Spanish = 3082,
     }
-    
+
     /// <summary>
     /// Types of font styles.
     /// </summary>
     public enum FontStyleFlag
     {
-        Bold		= 0x01,
-        Italic		= 0x02,
-        Underline	= 0x04,
-        Super		= 0x08,
-        Sub			= 0x10,
-        Scaps		= 0x20,
-        Strike		= 0x40,
+        Bold = 0x01,
+        Italic = 0x02,
+        Underline = 0x04,
+        Super = 0x08,
+        Sub = 0x10,
+        Scaps = 0x20,
+        Strike = 0x40,
     }
-    
+
     /// <summary>
     /// Types of image files.
     /// </summary>
@@ -95,7 +103,7 @@ namespace Elistia.DotNetRtfWriter
         Gif,
         Png
     }
-    
+
     /// <summary>
     /// Types of border styles.
     /// </summary>
@@ -107,7 +115,7 @@ namespace Elistia.DotNetRtfWriter
         Dashed,
         Double,
     }
-    
+
     /// <summary>
     /// Types of two-in-one style quoting symbols.
     /// (For Far East character formatting.)
@@ -177,8 +185,8 @@ namespace Elistia.DotNetRtfWriter
         /// <param name="sty">Font style to be added.</param>
         public void addStyle(FontStyleFlag sty)
         {
-            _styleAdd |= (UInt32) sty;
-            _styleRemove &= ~( (UInt32) sty );
+            _styleAdd |= (UInt32)sty;
+            _styleRemove &= ~((UInt32)sty);
         }
 
         /// <summary>
@@ -188,8 +196,8 @@ namespace Elistia.DotNetRtfWriter
         /// <param name="sty">Font style to be removed.</param>
         public void removeStyle(FontStyleFlag sty)
         {
-            _styleAdd &= ~( (UInt32) sty );
-            _styleRemove |= (UInt32) sty;
+            _styleAdd &= ~((UInt32)sty);
+            _styleRemove |= (UInt32)sty;
         }
 
         /// <summary>
@@ -197,17 +205,19 @@ namespace Elistia.DotNetRtfWriter
         /// </summary>
         /// <param name="sty">Font style to be tested.</param>
         /// <returns>True if the font style is in the set; false otherwise.</returns>
-        public bool containsStyleAdd( FontStyleFlag sty )
+        public bool containsStyleAdd(FontStyleFlag sty)
         {
-            if ((_styleAdd & (UInt32) sty) > 0) {
+            if ((_styleAdd & (UInt32)sty) > 0)
+            {
                 return true;
             }
             return false;
         }
-        
+
         public bool containsStyleRemove(FontStyleFlag sty)
         {
-            if ((_styleRemove & (UInt32) sty) > 0) {
+            if ((_styleRemove & (UInt32)sty) > 0)
+            {
                 return true;
             }
             return false;
@@ -232,7 +242,7 @@ namespace Elistia.DotNetRtfWriter
     public class FontDescriptor
     {
         private int _descr;
-        
+
         /// <summary>
         /// Internal use only.
         /// Constructor.
@@ -242,7 +252,7 @@ namespace Elistia.DotNetRtfWriter
         {
             _descr = descr;
         }
-        
+
         /// <summary>
         /// Internal use only.
         /// Get internal representative integer of the font.
@@ -263,7 +273,7 @@ namespace Elistia.DotNetRtfWriter
     public class ColorDescriptor
     {
         private int _descr;
-        
+
         /// <summary>
         /// Internal use only.
         /// Constructor.
@@ -314,12 +324,12 @@ namespace Elistia.DotNetRtfWriter
         internal Margins(float t, float r, float b, float l)
             : this()
         {
-            _margins[(int) Direction.Top] = t;
-            _margins[(int) Direction.Right] = r;
-            _margins[(int) Direction.Bottom] = b;
-            _margins[(int) Direction.Left] = l;
+            _margins[(int)Direction.Top] = t;
+            _margins[(int)Direction.Right] = r;
+            _margins[(int)Direction.Bottom] = b;
+            _margins[(int)Direction.Left] = l;
         }
-        
+
         /// <summary>
         /// Indexer that allows getting and setting of one of the four margin values.
         /// </summary>
@@ -330,8 +340,9 @@ namespace Elistia.DotNetRtfWriter
         {
             get
             {
-                int i = (int) d;
-                if (i >= 0 && i < _margins.Length) {
+                int i = (int)d;
+                if (i >= 0 && i < _margins.Length)
+                {
                     return _margins[i];
                 }
                 throw new Exception("Not a valid direction.");
@@ -339,20 +350,23 @@ namespace Elistia.DotNetRtfWriter
             set
             {
                 int i = (int)d;
-                if (i >= 0 && i < _margins.Length) {
+                if (i >= 0 && i < _margins.Length)
+                {
                     _margins[i] = value;
-                } else {
+                }
+                else
+                {
                     throw new Exception("Not a valid direction.");
                 }
             }
         }
 
-        public bool equals( Margins margins )
+        public bool equals(Margins margins)
         {
-            return ( margins._margins[(int) Direction.Bottom] == _margins[(int) Direction.Bottom] ) &&
-                ( margins._margins[(int) Direction.Left] == _margins[(int) Direction.Left] ) &&
-                ( margins._margins[(int) Direction.Right] == _margins[(int) Direction.Right] ) &&
-                ( margins._margins[(int) Direction.Top] == _margins[(int) Direction.Top] );
+            return (margins._margins[(int)Direction.Bottom] == _margins[(int)Direction.Bottom]) &&
+                (margins._margins[(int)Direction.Left] == _margins[(int)Direction.Left]) &&
+                (margins._margins[(int)Direction.Right] == _margins[(int)Direction.Right]) &&
+                (margins._margins[(int)Direction.Top] == _margins[(int)Direction.Top]);
         }
     }
 
@@ -364,7 +378,7 @@ namespace Elistia.DotNetRtfWriter
         private BorderStyle _style;
         private float _width;
         private ColorDescriptor _colorDesc;
-        
+
         /// <summary>
         /// Internal use only.
         /// Default constructor that sets border style to None.
@@ -384,7 +398,7 @@ namespace Elistia.DotNetRtfWriter
         /// <returns>True if the two borders are equal; false otherwise.</returns>
         public override bool Equals(object obj)
         {
-            Border bdr = (Border) obj;
+            Border bdr = (Border)obj;
             return (this.Style == bdr.Style && this.Width == bdr.Width);
         }
 
@@ -395,9 +409,9 @@ namespace Elistia.DotNetRtfWriter
         /// <returns>A hash code representing different sets of border attributes.</returns>
         public override int GetHashCode()
         {
-            return _width.GetHashCode() * 1000 + (int) _style;
+            return _width.GetHashCode() * 1000 + (int)_style;
         }
-        
+
         /// <summary>
         /// Get or set the border style.
         /// </summary>
@@ -412,7 +426,7 @@ namespace Elistia.DotNetRtfWriter
                 _style = value;
             }
         }
-        
+
         /// <summary>
         /// Get or set the width of the border line.
         /// </summary>
@@ -427,7 +441,7 @@ namespace Elistia.DotNetRtfWriter
                 _width = value;
             }
         }
-        
+
         /// <summary>
         /// Get or set the border color.
         /// </summary>
@@ -443,14 +457,14 @@ namespace Elistia.DotNetRtfWriter
             }
         }
     }
-    
+
     /// <summary>
     /// Border settings for a table cell, containing four sets of border attributes.
     /// </summary>
     public class Borders
     {
         private Border[] _borders;
-        
+
         /// <summary>
         /// Internal use only.
         /// Default constructor that sets all border style to None.
@@ -458,11 +472,12 @@ namespace Elistia.DotNetRtfWriter
         internal Borders()
         {
             _borders = new Border[4];
-            for (int i = 0; i < _borders.Length; i++) {
+            for (int i = 0; i < _borders.Length; i++)
+            {
                 _borders[i] = new Border();
             }
         }
-        
+
         /// <summary>
         /// Indexer that gets border attributes for borders in any of the four
         /// direction.
@@ -475,14 +490,15 @@ namespace Elistia.DotNetRtfWriter
             get
             {
                 int i = (int)d;
-                if (i >= 0 && i < _borders.Length) {
+                if (i >= 0 && i < _borders.Length)
+                {
                     return _borders[i];
                 }
                 throw new Exception("Not a valid direction.");
             }
         }
     }
-    
+
     /// <summary>
     /// Colors to be applied in the document. Note that objects of this class
     /// cannot be assigned to document directly. Instead, they work through
@@ -491,7 +507,7 @@ namespace Elistia.DotNetRtfWriter
     public class RtfColor
     {
         private int _color;
-        
+
         /// <summary>
         /// Default constructor that initialized as black color.
         /// </summary>
@@ -499,7 +515,7 @@ namespace Elistia.DotNetRtfWriter
         {
             _color = 0;
         }
-        
+
         /// <summary>
         /// Constructor that initializes using RGB values.
         /// </summary>
@@ -510,7 +526,7 @@ namespace Elistia.DotNetRtfWriter
         {
             _color = (red << 16) + (green << 8) + blue;
         }
-        
+
         /// <summary>
         /// Constructor that initializes using a string representation of
         /// a hexadecimal value.
@@ -519,12 +535,15 @@ namespace Elistia.DotNetRtfWriter
         /// as "FF0000" or "00AB12".</param>
         public RtfColor(string hex)
         {
-            if (hex == null || hex.Length != 6) {
+            if (hex == null || hex.Length != 6)
+            {
                 throw new Exception("String parameter hex should be of length 6.");
             }
             hex = hex.ToUpper();
-            for (int i = 0; i < hex.Length; i++) {
-                if (!Char.IsDigit(hex[i]) && (hex[i] < 'A' || hex[i] > 'F')) {
+            for (int i = 0; i < hex.Length; i++)
+            {
+                if (!Char.IsDigit(hex[i]) && (hex[i] < 'A' || hex[i] > 'F'))
+                {
                     throw new Exception("Characters of parameter hex should be in [0-9,A-F,a-f]");
                 }
             }
@@ -533,16 +552,16 @@ namespace Elistia.DotNetRtfWriter
             byte blue = Convert.ToByte(hex.Substring(4, 2), 16);
             _color = (red << 16) + (green << 8) + blue;
         }
-        
+
         /// <summary>
         /// Constructor that initializes using System Drawing colour
         /// </summary>
         /// <param name="color">System Drawing Colour</param>
         public RtfColor(System.Drawing.Color color)
         {
-            _color = ( color.R << 16 ) + ( color.G << 8 ) + color.B;
+            _color = (color.R << 16) + (color.G << 8) + color.B;
         }
-        
+
         /// <summary>
         /// Indirect use only.
         /// See if two colors are the same.
@@ -551,7 +570,7 @@ namespace Elistia.DotNetRtfWriter
         /// <returns>True if two colors are identical; false otherwise.</returns>
         public override bool Equals(object obj)
         {
-            RtfColor b = (RtfColor) obj;
+            RtfColor b = (RtfColor)obj;
             return (b._color == this._color);
         }
 
@@ -598,7 +617,7 @@ namespace Elistia.DotNetRtfWriter
             }
         }
     }
-    
+
     /// <summary>
     /// Internal use only.
     /// A collection of cell merging information associated with each table cell being merged.
@@ -610,7 +629,7 @@ namespace Elistia.DotNetRtfWriter
         private int _rowIndex;
         private int _colIndex;
         private RtfTableCell _representative;
-        
+
         /// <summary>
         /// Internal use only.
         /// Constructor.
@@ -632,7 +651,7 @@ namespace Elistia.DotNetRtfWriter
             _rowIndex = rowIndex;
             _colIndex = colIndex;
         }
-        
+
         /// <summary>
         /// Get the number of rows that this group of merged cells spans.
         /// </summary>
@@ -654,7 +673,7 @@ namespace Elistia.DotNetRtfWriter
                 return _colSpan;
             }
         }
-        
+
         /// <summary>
         /// Get the relative row index of the cell within this group of merged cells.
         /// </summary>
@@ -665,7 +684,7 @@ namespace Elistia.DotNetRtfWriter
                 return _rowIndex;
             }
         }
-        
+
         /// <summary>
         /// Get the relative column index of the cell within this group of merged cells.
         /// </summary>
@@ -676,7 +695,7 @@ namespace Elistia.DotNetRtfWriter
                 return _colIndex;
             }
         }
-        
+
         /// <summary>
         /// Get the representative cell of the cell.
         /// </summary>

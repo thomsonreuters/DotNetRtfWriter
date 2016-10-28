@@ -25,6 +25,22 @@ namespace Elistia.DotNetRtfWriter
         private bool _allowControlWord;
         private bool _allowImage;
         private bool _allowTable;
+
+        /// <summary>
+        ///  Reading Direction 
+        /// </summary>
+        public ReadingDirection ReadingDirection { get; set; }
+
+        /// <summary>
+        /// Based on Thread Culture ContentDirection will be set
+        /// </summary>
+        protected string ContentDirection
+        {
+            get
+            {
+                return ReadingDirection == ReadingDirection.RightToLeft ? "rtl" : "ltr";
+            }
+        }
         
         /// <summary>
         /// Internal use only.
