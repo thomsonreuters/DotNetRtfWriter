@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.IO;
 
@@ -19,8 +20,13 @@ namespace Elistia.DotNetRtfWriter
         private List<RtfColor> _colorTable;
         private RtfHeaderFooter _header;
         private RtfHeaderFooter _footer;
-        
+
         public RtfDocument(PaperSize paper, PaperOrientation orientation, Lcid lcid)
+            : this(paper, orientation, CultureInfo.GetCultureInfo(((int)lcid)))
+        {
+
+        }
+        public RtfDocument(PaperSize paper, PaperOrientation orientation, CultureInfo cultureInfo)
         {
             _paper = paper;
             _orientation = orientation;
@@ -36,7 +42,10 @@ namespace Elistia.DotNetRtfWriter
                 _margins[Direction.Bottom] = DefaultValue.MarginLarge;
                 _margins[Direction.Left] = DefaultValue.MarginSmall;
             }
-            _lcid = lcid;
+            _lcid = (Lcid)cultureInfo.LCID;
+            ReadingDirection = cultureInfo.TextInfo.IsRightToLeft
+                ? ReadingDirection.RightToLeft
+                : ReadingDirection.LeftToRight;
             _fontTable = new List<string>();
             _fontTable.Add(DefaultValue.Font);		// default font
             _colorTable = new List<RtfColor>();
@@ -62,7 +71,7 @@ namespace Elistia.DotNetRtfWriter
             get
             {
                 if (_header == null) {
-                    _header = new RtfHeaderFooter(HeaderFooterType.Header);
+                    _header = new RtfHeaderFooter(HeaderFooterType.Header, ReadingDirection);
                 }
                 return _header;
             }
@@ -73,7 +82,7 @@ namespace Elistia.DotNetRtfWriter
             get
             {
                 if (_footer == null) {
-                    _footer = new RtfHeaderFooter(HeaderFooterType.Footer);
+                    _footer = new RtfHeaderFooter(HeaderFooterType.Footer, ReadingDirection);
                 }
                 return _footer;
             }

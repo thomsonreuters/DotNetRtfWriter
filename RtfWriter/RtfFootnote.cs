@@ -12,10 +12,17 @@ namespace Elistia.DotNetRtfWriter
     public class RtfFootnote : RtfBlockList
     {
         private int _position;
-        
+
         internal RtfFootnote(int position, int textLength)
+            : this(position, textLength, ReadingDirection.LeftToRight)
+        {
+
+        }
+
+        internal RtfFootnote(int position, int textLength, ReadingDirection direction)
             : base(true, false, false, true, false)
         {
+            ReadingDirection = direction;
             if (position < 0 || position >= textLength) {
                 throw new Exception("Invalid footnote position: " + position
                                     + " (text length=" + textLength + ")");

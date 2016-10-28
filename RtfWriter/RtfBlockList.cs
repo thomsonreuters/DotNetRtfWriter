@@ -114,7 +114,7 @@ namespace Elistia.DotNetRtfWriter
             if (!_allowParagraph) {
                 throw new Exception("Paragraph is not allowed.");
             }
-            RtfParagraph block = new RtfParagraph(_allowFootnote, _allowControlWord);
+            RtfParagraph block = new RtfParagraph(_allowFootnote, _allowControlWord, ReadingDirection);
             addBlock(block);
             return block;
         }

@@ -13,12 +13,19 @@ namespace Elistia.DotNetRtfWriter
     {
         private Hashtable _magicWords;
         private HeaderFooterType _type;
-        
+
         internal RtfHeaderFooter(HeaderFooterType type)
+            : this(type, ReadingDirection.LeftToRight)
+        {
+
+        }
+
+        internal RtfHeaderFooter(HeaderFooterType type,ReadingDirection direction)
             : base(true, false, true, true, false)
         {
             _magicWords = new Hashtable();
             _type = type;
+            ReadingDirection = direction;
         }
 
         public override string render()
