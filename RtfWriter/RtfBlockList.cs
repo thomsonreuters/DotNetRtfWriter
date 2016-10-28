@@ -204,7 +204,7 @@ namespace Elistia.DotNetRtfWriter
             if (!_allowTable) {
                 throw new Exception("Table is not allowed.");
             }
-            RtfTable block = new RtfTable(rowCount, colCount, horizontalWidth, fontSize);
+            RtfTable block = new RtfTable(rowCount, colCount, horizontalWidth, fontSize, ReadingDirection);
             addBlock(block);
             return block;
         }

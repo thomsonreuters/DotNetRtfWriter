@@ -27,7 +27,13 @@ namespace Elistia.DotNetRtfWriter
         private Margins[] _cellPadding;
 
         public RtfTable(int rowCount, int colCount, float horizontalWidth, float fontSize)
+            : this(rowCount, colCount, horizontalWidth, fontSize, ReadingDirection.LeftToRight)
         {
+        }
+
+        public RtfTable(int rowCount, int colCount, float horizontalWidth, float fontSize, ReadingDirection direction)
+        {
+            ReadingDirection = direction;
             _fontSize = fontSize;
             _alignment = Align.None;
             _margins = new Margins();
@@ -37,7 +43,8 @@ namespace Elistia.DotNetRtfWriter
             _startNewPage = false;
             _titleRowCount = 0;
             _cellPadding = new Margins[_rowCount];
-            if (_rowCount < 1 || _colCount < 1) {
+            if (_rowCount < 1 || _colCount < 1)
+            {
                 throw new Exception("The number of rows or columns is less than 1.");
             }
 
@@ -50,12 +57,14 @@ namespace Elistia.DotNetRtfWriter
             _cells = new RtfTableCell[_rowCount][];
             _rowHeight = new float[_rowCount];
             _rowKeepInSamePage = new bool[_rowCount];
-            for (int i = 0; i < _rowCount; i++) {
+            for (int i = 0; i < _rowCount; i++)
+            {
                 _cells[i] = new RtfTableCell[_colCount];
                 _rowHeight[i] = 0F;
                 _rowKeepInSamePage[i] = false;
                 _cellPadding[i] = new Margins();
-                for (int j = 0; j < _colCount; j++) {
+                for (int j = 0; j < _colCount; j++)
+                {
                     _cells[i][j] = new RtfTableCell(_defaultCellWidth, i, j, this);
                 }
             }
@@ -89,7 +98,8 @@ namespace Elistia.DotNetRtfWriter
         {
             get
             {
-                if (_defaultCharFormat == null) {
+                if (_defaultCharFormat == null)
+                {
                     _defaultCharFormat = new RtfCharFormat(-1, -1, 1);
                 }
                 return _defaultCharFormat;
@@ -107,7 +117,7 @@ namespace Elistia.DotNetRtfWriter
                 _startNewPage = value;
             }
         }
-        
+
         public int RowCount
         {
             get
@@ -115,7 +125,7 @@ namespace Elistia.DotNetRtfWriter
                 return _rowCount;
             }
         }
-        
+
         public int ColCount
         {
             get
@@ -123,7 +133,7 @@ namespace Elistia.DotNetRtfWriter
                 return _colCount;
             }
         }
-        
+
         /// <summary>
         /// Title row will be displayed in every page on which the table appears.
         /// </summary>
@@ -138,7 +148,7 @@ namespace Elistia.DotNetRtfWriter
                 _titleRowCount = value;
             }
         }
-        
+
         public Margins[] CellPadding
         {
             get
@@ -162,10 +172,11 @@ namespace Elistia.DotNetRtfWriter
                 throw new Exception("BlockHead is not supported for tables.");
             }
         }
-        
+
         public RtfTableCell cell(int row, int col)
         {
-            if (_cells[row][col].IsMerged) {
+            if (_cells[row][col].IsMerged)
+            {
                 return _cells[row][col].MergeInfo.Representative;
             }
             return _cells[row][col];
@@ -173,38 +184,46 @@ namespace Elistia.DotNetRtfWriter
 
         public void setColWidth(int col, float width)
         {
-            if (col < 0 || col >= _colCount) {
+            if (col < 0 || col >= _colCount)
+            {
                 throw new Exception("Column index out of range");
             }
-            for (int i = 0; i < _rowCount; i++) {
-                if (_cells[i][col].IsMerged) {
+            for (int i = 0; i < _rowCount; i++)
+            {
+                if (_cells[i][col].IsMerged)
+                {
                     throw new Exception("Column width cannot be set "
                                         + "because some cell in this column has been merged.");
                 }
             }
-            for (int i = 0; i < _rowCount; i++) {
+            for (int i = 0; i < _rowCount; i++)
+            {
                 _cells[i][col].Width = width;
             }
         }
-        
+
         public void setRowHeight(int row, float height)
         {
-            if (row < 0 || row >= _rowCount) {
+            if (row < 0 || row >= _rowCount)
+            {
                 throw new Exception("Row index out of range");
             }
-            for (int i = 0; i < _colCount; i++) {
+            for (int i = 0; i < _colCount; i++)
+            {
                 if (_cells[row][i].IsMerged
-                    && _cells[row][i].MergeInfo.Representative.MergeInfo.RowSpan > 1) {
+                    && _cells[row][i].MergeInfo.Representative.MergeInfo.RowSpan > 1)
+                {
                     throw new Exception("Row height cannot be set "
                                         + "because some cell in this row has been merged.");
                 }
             }
             _rowHeight[row] = height;
         }
-        
+
         public void setRowKeepInSamePage(int row, bool allow)
         {
-            if (row < 0 || row >= _rowCount) {
+            if (row < 0 || row >= _rowCount)
+            {
                 throw new Exception("Row index out of range");
             }
             _rowKeepInSamePage[row] = allow;
@@ -212,42 +231,54 @@ namespace Elistia.DotNetRtfWriter
 
         public RtfTableCell merge(int topRow, int leftCol, int rowSpan, int colSpan)
         {
-            if (topRow < 0 || topRow >= _rowCount) {
+            if (topRow < 0 || topRow >= _rowCount)
+            {
                 throw new Exception("Row index out of range");
             }
-            if (leftCol < 0 || leftCol >= _colCount) {
+            if (leftCol < 0 || leftCol >= _colCount)
+            {
                 throw new Exception("Column index out of range");
             }
-            if (rowSpan < 1 || topRow + rowSpan - 1 >= _rowCount) {
+            if (rowSpan < 1 || topRow + rowSpan - 1 >= _rowCount)
+            {
                 throw new Exception("Row span out of range.");
             }
-            if (colSpan < 1 || leftCol + colSpan - 1 >= _colCount) {
+            if (colSpan < 1 || leftCol + colSpan - 1 >= _colCount)
+            {
                 throw new Exception("Column span out of range.");
             }
-            if (colSpan == 1 && rowSpan == 1) {
+            if (colSpan == 1 && rowSpan == 1)
+            {
                 return cell(topRow, leftCol);
             }
             // Check if the cell has been merged before.
-            for (int i = 0; i < rowSpan; i++) {
-                for (int j = 0; j < colSpan; j++) {
-                    if (_cells[topRow + i][leftCol + j].IsMerged) {
+            for (int i = 0; i < rowSpan; i++)
+            {
+                for (int j = 0; j < colSpan; j++)
+                {
+                    if (_cells[topRow + i][leftCol + j].IsMerged)
+                    {
                         throw new Exception("Cannot merge cells because some of the cells has been merged.");
                     }
                 }
             }
 
             float width = 0;
-            for (int i = 0; i < rowSpan; i++) {
-                for (int j = 0; j < colSpan; j++) {
+            for (int i = 0; i < rowSpan; i++)
+            {
+                for (int j = 0; j < colSpan; j++)
+                {
                     // Sum up the column widths in the first row.
-                    if (i == 0) {
+                    if (i == 0)
+                    {
                         width += _cells[topRow][leftCol + j].Width;
                     }
                     // Set merge info for each cell.
                     // Note: The representatives of all cells are set to the (topRow, leftCol) cell.
                     _cells[topRow + i][leftCol + j].MergeInfo
                         = new CellMergeInfo(_cells[topRow][leftCol], rowSpan, colSpan, i, j);
-                    if (i != 0 || j != 0) {
+                    if (i != 0 || j != 0)
+                    {
                         // Transfer the blocks (contents) of each cell to their representative cell.
                         _cells[topRow + i][leftCol + j].transferBlocksTo(
                             _cells[topRow + i][leftCol + j].MergeInfo.Representative);
@@ -262,14 +293,16 @@ namespace Elistia.DotNetRtfWriter
 
         private void validateAllMergedCellBorders()
         {
-            for (int i = 0; i < _representativeList.Count; i++) {
+            for (int i = 0; i < _representativeList.Count; i++)
+            {
                 validateMergedCellBorders(_representativeList[i]);
             }
         }
 
         private void validateMergedCellBorders(RtfTableCell representative)
         {
-            if (!representative.IsMerged) {
+            if (!representative.IsMerged)
+            {
                 throw new Exception("Invalid representative (cell is not merged).");
             }
             validateMergedCellBorder(representative, Direction.Top);
@@ -280,7 +313,8 @@ namespace Elistia.DotNetRtfWriter
 
         private void validateMergedCellBorder(RtfTableCell representative, Direction dir)
         {
-            if (!representative.IsMerged) {
+            if (!representative.IsMerged)
+            {
                 throw new Exception("Invalid representative (cell is not merged).");
             }
             Dictionary<Border, int> stat = new Dictionary<Border, int>();
@@ -288,36 +322,51 @@ namespace Elistia.DotNetRtfWriter
             int majorityCount;
             int limit = (dir == Direction.Top || dir == Direction.Bottom) ?
                 representative.MergeInfo.ColSpan : representative.MergeInfo.RowSpan;
-            
-            for (int i = 0; i < limit; i++) {
+
+            for (int i = 0; i < limit; i++)
+            {
                 int r, c;
                 Border bdr;
-                if (dir == Direction.Top || dir == Direction.Bottom) {
-                    if (dir == Direction.Top) {
+                if (dir == Direction.Top || dir == Direction.Bottom)
+                {
+                    if (dir == Direction.Top)
+                    {
                         r = 0;
-                    } else { // dir == bottom
+                    }
+                    else
+                    { // dir == bottom
                         r = representative.MergeInfo.RowSpan - 1;
                     }
                     c = i;
-                } else { // dir == right || left
-                    if (dir == Direction.Right) {
+                }
+                else
+                { // dir == right || left
+                    if (dir == Direction.Right)
+                    {
                         c = representative.MergeInfo.ColSpan - 1;
-                    } else { // dir == left
+                    }
+                    else
+                    { // dir == left
                         c = 0;
                     }
                     r = i;
                 }
                 bdr = _cells[representative.RowIndex + r][representative.ColIndex + c].Borders[dir];
-                if (stat.ContainsKey(bdr)) {
+                if (stat.ContainsKey(bdr))
+                {
                     stat[bdr] = (int)stat[bdr] + 1;
-                } else {
+                }
+                else
+                {
                     stat[bdr] = 1;
                 }
             }
             majorityCount = -1;
             majorityBorder = representative.Borders[dir];
-            foreach(KeyValuePair<Border, int> de in stat) {
-                if(de.Value > majorityCount) {
+            foreach (KeyValuePair<Border, int> de in stat)
+            {
+                if (de.Value > majorityCount)
+                {
                     majorityCount = de.Value;
                     majorityBorder.Style = de.Key.Style;
                     majorityBorder.Width = de.Key.Width;
@@ -344,19 +393,26 @@ namespace Elistia.DotNetRtfWriter
         /// <param name="color"></param>
         public void setInnerBorder(BorderStyle style, float width, ColorDescriptor color)
         {
-            for (int i = 0; i < _rowCount; i++) {
-                for (int j = 0; j < _colCount; j++) {
-                    if (i == 0) {
+            for (int i = 0; i < _rowCount; i++)
+            {
+                for (int j = 0; j < _colCount; j++)
+                {
+                    if (i == 0)
+                    {
                         // The first row
                         _cells[i][j].Borders[Direction.Bottom].Style = style;
                         _cells[i][j].Borders[Direction.Bottom].Width = width;
                         _cells[i][j].Borders[Direction.Bottom].Color = color;
-                    } else if (i == _rowCount - 1) {
+                    }
+                    else if (i == _rowCount - 1)
+                    {
                         // The last row
                         _cells[i][j].Borders[Direction.Top].Style = style;
                         _cells[i][j].Borders[Direction.Top].Width = width;
                         _cells[i][j].Borders[Direction.Top].Color = color;
-                    } else {
+                    }
+                    else
+                    {
                         _cells[i][j].Borders[Direction.Top].Style = style;
                         _cells[i][j].Borders[Direction.Top].Width = width;
                         _cells[i][j].Borders[Direction.Top].Color = color;
@@ -364,17 +420,22 @@ namespace Elistia.DotNetRtfWriter
                         _cells[i][j].Borders[Direction.Bottom].Color = color;
                         _cells[i][j].Borders[Direction.Bottom].Width = width;
                     }
-                    if (j == 0) {
+                    if (j == 0)
+                    {
                         // The first column
                         _cells[i][j].Borders[Direction.Right].Style = style;
                         _cells[i][j].Borders[Direction.Right].Width = width;
                         _cells[i][j].Borders[Direction.Right].Color = color;
-                    } else if (j == _colCount - 1) {
+                    }
+                    else if (j == _colCount - 1)
+                    {
                         // The last column
                         _cells[i][j].Borders[Direction.Left].Style = style;
                         _cells[i][j].Borders[Direction.Left].Width = width;
                         _cells[i][j].Borders[Direction.Left].Color = color;
-                    } else {
+                    }
+                    else
+                    {
                         _cells[i][j].Borders[Direction.Right].Style = style;
                         _cells[i][j].Borders[Direction.Right].Width = width;
                         _cells[i][j].Borders[Direction.Right].Color = color;
@@ -385,7 +446,7 @@ namespace Elistia.DotNetRtfWriter
                 }
             }
         }
-        
+
         /// <summary>
         /// Set ALL outer borders (colour will be set to default)
         /// </summary>
@@ -395,7 +456,7 @@ namespace Elistia.DotNetRtfWriter
         {
             setOuterBorder(style, width, new ColorDescriptor(0));
         }
-        
+
         /// <summary>
         /// Sets ALL outer borders as specified
         /// </summary>
@@ -404,7 +465,8 @@ namespace Elistia.DotNetRtfWriter
         /// <param name="color"></param>
         public void setOuterBorder(BorderStyle style, float width, ColorDescriptor color)
         {
-            for (int i = 0; i < _colCount; i++) {
+            for (int i = 0; i < _colCount; i++)
+            {
                 _cells[0][i].Borders[Direction.Top].Style = style;
                 _cells[0][i].Borders[Direction.Top].Width = width;
                 _cells[0][i].Borders[Direction.Top].Color = color;
@@ -412,7 +474,8 @@ namespace Elistia.DotNetRtfWriter
                 _cells[_rowCount - 1][i].Borders[Direction.Bottom].Width = width;
                 _cells[_rowCount - 1][i].Borders[Direction.Bottom].Color = color;
             }
-            for (int i = 0; i < _rowCount; i++) {
+            for (int i = 0; i < _rowCount; i++)
+            {
                 _cells[i][0].Borders[Direction.Left].Style = style;
                 _cells[i][0].Borders[Direction.Left].Width = width;
                 _cells[i][0].Borders[Direction.Left].Color = color;
@@ -458,14 +521,19 @@ namespace Elistia.DotNetRtfWriter
             // (borders may be changed because of cell merging)
             validateAllMergedCellBorders();
             // set default char format for each cell.
-            if (_defaultCharFormat != null) {
-                for (int i = 0; i < _rowCount; i++) {
-                    for (int j = 0; j < _colCount; j++) {
+            if (_defaultCharFormat != null)
+            {
+                for (int i = 0; i < _rowCount; i++)
+                {
+                    for (int j = 0; j < _colCount; j++)
+                    {
                         if (_cells[i][j].IsMerged
-                            && _cells[i][j].MergeInfo.Representative != _cells[i][j]) {
+                            && _cells[i][j].MergeInfo.Representative != _cells[i][j])
+                        {
                             continue;
                         }
-                        if (_cells[i][j].DefaultCharFormat != null) {
+                        if (_cells[i][j].DefaultCharFormat != null)
+                        {
                             _cells[i][j].DefaultCharFormat.copyFrom(_defaultCharFormat);
                         }
                     }
@@ -474,14 +542,20 @@ namespace Elistia.DotNetRtfWriter
 
             float topMargin = _margins[Direction.Top] - _fontSize;
 
-            if(_startNewPage || topMargin > 0) {
+            if (_startNewPage || topMargin > 0)
+            {
                 result.Append(@"{\pard");
-                if (_startNewPage) {
+                result.AppendFormat(@"{0}\par", ContentDirection);
+                if (_startNewPage)
+                {
                     result.Append(@"\pagebb");
                 }
-                if (_margins[Direction.Top] >= 0) {
+                if (_margins[Direction.Top] >= 0)
+                {
                     result.Append(@"\sl-" + RtfUtility.pt2Twip(topMargin));
-                } else {
+                }
+                else
+                {
                     result.Append(@"\sl-1");
                 }
                 result.AppendLine(@"\slmult0\par}");
@@ -492,13 +566,15 @@ namespace Elistia.DotNetRtfWriter
             for (int i = 0; i < _rowCount; i++)
             {
                 colAcc = 0;
-                result.Append(@"{\trowd\trgaph" +
-                              string.Format(@"\trpaddl{0}\trpaddt{1}\trpaddr{2}\trpaddb{3}",
-                                            RtfUtility.pt2Twip(CellPadding[i][Direction.Left]),
-                                            RtfUtility.pt2Twip(CellPadding[i][Direction.Top]),
-                                            RtfUtility.pt2Twip(CellPadding[i][Direction.Right]),
-                                            RtfUtility.pt2Twip(CellPadding[i][Direction.Bottom])));
-                switch (_alignment) {
+                result.Append(@"{\trowd\" + ContentDirection + "row" + @"\trgaph" +
+                             string.Format(@"\trpaddl{0}\trpaddt{1}\trpaddr{2}\trpaddb{3}",
+                                           RtfUtility.pt2Twip(CellPadding[i][Direction.Left]),
+                                           RtfUtility.pt2Twip(CellPadding[i][Direction.Top]),
+                                           RtfUtility.pt2Twip(CellPadding[i][Direction.Right]),
+                                           RtfUtility.pt2Twip(CellPadding[i][Direction.Bottom])));
+
+                switch (_alignment)
+                {
                     case Align.Left:
                         result.Append(@"\trql");
                         break;
@@ -513,41 +589,49 @@ namespace Elistia.DotNetRtfWriter
                         break;
                 }
                 result.AppendLine();
-                if (_margins[Direction.Left] >= 0) {
+                if (_margins[Direction.Left] >= 0)
+                {
                     result.AppendLine(@"\trleft" + RtfUtility.pt2Twip(_margins[Direction.Left]));
                     colAcc = RtfUtility.pt2Twip(_margins[Direction.Left]);
                 }
-                if (_rowHeight[i] > 0) {
+                if (_rowHeight[i] > 0)
+                {
                     result.Append(@"\trrh" + RtfUtility.pt2Twip(_rowHeight[i]));
                 }
-                if (_rowKeepInSamePage[i]) {
+                if (_rowKeepInSamePage[i])
+                {
                     result.Append(@"\trkeep");
                 }
-                if (i < _titleRowCount) {
+                if (i < _titleRowCount)
+                {
                     result.Append(@"\trhdr");
                 }
                 result.AppendLine();
 
                 for (int j = 0; j < _colCount; j++)
                 {
-                    if (_cells[i][j].IsMerged && !_cells[i][j].IsBeginOfColSpan) {
+                    if (_cells[i][j].IsMerged && !_cells[i][j].IsBeginOfColSpan)
+                    {
                         continue;
                     }
                     float nextCellLeftBorderClearance = j < _colCount - 1 ? cell(i, j + 1).OuterLeftBorderClearance : 0;
                     colAcc += RtfUtility.pt2Twip(cell(i, j).Width);
                     int colRightPos = colAcc;
-                    if(nextCellLeftBorderClearance < 0)
+                    if (nextCellLeftBorderClearance < 0)
                     {
                         colRightPos += RtfUtility.pt2Twip(nextCellLeftBorderClearance);
                         colRightPos = colRightPos == 0 ? 1 : colRightPos;
                     }
 
                     // Borders
-                    for (Direction d = Direction.Top; d <= Direction.Left; d++) {
+                    for (Direction d = Direction.Top; d <= Direction.Left; d++)
+                    {
                         Border bdr = cell(i, j).Borders[d];
-                        if (bdr.Style != BorderStyle.None) {
+                        if (bdr.Style != BorderStyle.None)
+                        {
                             result.Append(@"\clbrdr");
-                            switch (d) {
+                            switch (d)
+                            {
                                 case Direction.Top:
                                     result.Append("t");
                                     break;
@@ -563,7 +647,8 @@ namespace Elistia.DotNetRtfWriter
                             }
                             result.Append(@"\brdrw" + RtfUtility.pt2Twip(bdr.Width));
                             result.Append(@"\brdr");
-                            switch (bdr.Style) {
+                            switch (bdr.Style)
+                            {
                                 case BorderStyle.Single:
                                     result.Append("s");
                                     break;
@@ -589,10 +674,14 @@ namespace Elistia.DotNetRtfWriter
                     else if (RowBackgroundColour != null && (RowAltBackgroundColour == null || i % 2 == 0)) result.Append(string.Format(@"\clcbpat{0}", RowBackgroundColour.Value)); // row colour
                     else if (RowBackgroundColour != null && RowAltBackgroundColour != null && i % 2 != 0) result.Append(string.Format(@"\clcbpat{0}", RowAltBackgroundColour.Value)); // alt row colour
 
-                    if (_cells[i][j].IsMerged && _cells[i][j].MergeInfo.RowSpan > 1) {
-                        if (_cells[i][j].IsBeginOfRowSpan) {
+                    if (_cells[i][j].IsMerged && _cells[i][j].MergeInfo.RowSpan > 1)
+                    {
+                        if (_cells[i][j].IsBeginOfRowSpan)
+                        {
                             result.Append(@"\clvmgf");
-                        } else {
+                        }
+                        else
+                        {
                             result.Append(@"\clvmrg");
                         }
                     }
@@ -613,7 +702,8 @@ namespace Elistia.DotNetRtfWriter
 
                 for (int j = 0; j < _colCount; j++)
                 {
-                    if (!_cells[i][j].IsMerged || _cells[i][j].IsBeginOfColSpan) {
+                    if (!_cells[i][j].IsMerged || _cells[i][j].IsBeginOfColSpan)
+                    {
                         result.Append(_cells[i][j].render());
                     }
                 }
@@ -621,7 +711,8 @@ namespace Elistia.DotNetRtfWriter
                 result.AppendLine(@"\row}");
             }
 
-            if (_margins[Direction.Bottom] >= 0) {
+            if (_margins[Direction.Bottom] >= 0)
+            {
                 result.Append(@"\sl-" + RtfUtility.pt2Twip(_margins[Direction.Bottom]) + @"\slmult");
             }
 

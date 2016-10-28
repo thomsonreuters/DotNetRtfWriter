@@ -16,10 +16,17 @@ namespace Elistia.DotNetRtfWriter
         private CellMergeInfo _mergeInfo;
         private int _rowIndex;
         private int _colIndex;
-        
+
         internal RtfTableCell(float width, int rowIndex, int colIndex, RtfTable parentTable)
+            : this(width, rowIndex, colIndex, parentTable, ReadingDirection.LeftToRight)
+        {
+
+        }
+
+        internal RtfTableCell(float width, int rowIndex, int colIndex, RtfTable parentTable,ReadingDirection direction)
             : base(true, false)
         {
+            ReadingDirection = direction;
             _width = width;
             _halign = Align.None;
             _valign = AlignVertical.Top;
