@@ -74,7 +74,6 @@ namespace RtfWriter.UnitTests
         [TestMethod]
         public void TestStartNewPagePropertySet()
         {
-            var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.StartNewPage = false;
             Assert.AreEqual(rtfParagraph.StartNewPage, false);
@@ -84,7 +83,6 @@ namespace RtfWriter.UnitTests
         [TestMethod]
         public void TestMarginPropertyGet()
         {
-            var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             Assert.IsNotNull(rtfParagraph.Margins);
 
