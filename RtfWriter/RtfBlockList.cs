@@ -124,7 +124,7 @@ namespace Elistia.DotNetRtfWriter
         /// </summary>
         public RtfSection addSection(SectionStartEnd type, RtfDocument doc)
         {
-            var block = new RtfSection(type, doc);
+            var block = new RtfSection(type, doc, ReadingDirection);
             addBlock(block);
             return block;
         }
@@ -140,7 +140,7 @@ namespace Elistia.DotNetRtfWriter
             if (!_allowImage) {
                 throw new Exception("Image is not allowed.");
             }
-            RtfImage block = new RtfImage(imgFname, imgType);
+            RtfImage block = new RtfImage(imgFname, imgType, ReadingDirection);
             addBlock(block);
             return block;
         }

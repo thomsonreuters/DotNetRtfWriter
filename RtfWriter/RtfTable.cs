@@ -65,7 +65,7 @@ namespace Elistia.DotNetRtfWriter
                 _cellPadding[i] = new Margins();
                 for (int j = 0; j < _colCount; j++)
                 {
-                    _cells[i][j] = new RtfTableCell(_defaultCellWidth, i, j, this);
+                    _cells[i][j] = new RtfTableCell(_defaultCellWidth, i, j, this, direction);
                 }
             }
         }

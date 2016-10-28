@@ -199,12 +199,57 @@ namespace RtfWriter.UnitTests
         }
 
         [TestMethod]
-        public void RTL_TableRendereTest()
+        public void RTL_TableRendereTestWithReadingDirectionRightToLeft()
         {
             var rtfTable = new RtfTable(1, 2, 20, 20, ReadingDirection.RightToLeft);
             var sb = new StringBuilder();
 
             sb.AppendLine(string.Format(@"{{\trowd\{0}row\trgaph\trpaddl0\trpaddt0\trpaddr0\trpaddb0", RtlContent))
+                .AppendLine(@"\trleft0")
+                .AppendLine()
+                .AppendLine(
+                    @"\clbrdrt\brdrw40\brdrs\brdrcf0\clbrdrr\brdrw20\brdrdot\brdrcf0\clbrdrb\brdrw40\brdrs\brdrcf0\clbrdrl\brdrw40\brdrs\brdrcf0\clvertalt\cellx200")
+                .AppendLine(
+                    @"\clbrdrt\brdrw40\brdrs\brdrcf0\clbrdrr\brdrw40\brdrs\brdrcf0\clbrdrb\brdrw40\brdrs\brdrcf0\clbrdrl\brdrw20\brdrdot\brdrcf0\clvertalt\cellx400")
+                .AppendLine(@"\pard\intbl\fi0\rtlpar\ql")
+                .AppendLine("CELL 0,0")
+                .AppendLine()
+                .AppendLine()
+                .AppendLine(@"\cell")
+                .AppendLine(@"\pard\intbl\fi0\rtlpar\ql")
+                .AppendLine("CELL 0,1")
+                .AppendLine()
+                .AppendLine()
+                .AppendLine(@"\cell")
+                .AppendLine(@"\row}")
+                .Append(@"\sl-400\slmult");
+
+            rtfTable.Margins[Direction.Bottom] = 20;
+            rtfTable.setInnerBorder(BorderStyle.Dotted, 1f);
+            rtfTable.setOuterBorder(BorderStyle.Single, 2f);
+
+            for (var i = 0; i < rtfTable.RowCount; i++)
+            {
+                for (var j = 0; j < rtfTable.ColCount; j++)
+                {
+                    rtfTable.cell(i, j).addParagraph().setText("CELL " + i.ToString() + "," + j.ToString());
+                }
+            }
+
+            var result = rtfTable.render();
+            var expectString = sb.ToString();
+
+            Assert.AreEqual(expectString, result);
+
+        }
+
+        [TestMethod]
+        public void RTL_TableRendereTestWithReadingDirectionLeftToRight()
+        {
+            var rtfTable = new RtfTable(1, 2, 20, 20, ReadingDirection.LeftToRight);
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Format(@"{{\trowd\{0}row\trgaph\trpaddl0\trpaddt0\trpaddr0\trpaddb0", LtrContent))
                 .AppendLine(@"\trleft0")
                 .AppendLine()
                 .AppendLine(

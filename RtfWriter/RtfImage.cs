@@ -26,7 +26,13 @@ namespace Elistia.DotNetRtfWriter
         private bool _startNewPara;
 
         internal RtfImage(string fileName, ImageFileType type)
+            : this(fileName, type, ReadingDirection.LeftToRight)
         {
+        }
+
+        internal RtfImage(string fileName, ImageFileType type, ReadingDirection direction)
+        {
+            ReadingDirection = direction;
             _imgFname = fileName;
             _imgType = type;
             _alignment = Align.None;
@@ -48,9 +54,15 @@ namespace Elistia.DotNetRtfWriter
             }
         }
 
-
         internal RtfImage(System.IO.MemoryStream imageStream)
+            : this(imageStream, ReadingDirection.LeftToRight)
         {
+
+        }
+
+        internal RtfImage(System.IO.MemoryStream imageStream, ReadingDirection direction)
+        {
+            ReadingDirection = direction;
             _alignment = Align.Left;
             _margins = new Margins();
             _keepAspectRatio = true;
