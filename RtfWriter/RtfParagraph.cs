@@ -24,13 +24,13 @@ namespace Elistia.DotNetRtfWriter
         private bool _startNewPage;
         private float _firstLineIndent;
         private RtfCharFormat _defaultCharFormat;
-        
+
         protected struct Token
         {
             public string text;
             public bool isControl;
         }
-        
+
         private class DisjointRange
         {
             public DisjointRange()
@@ -49,7 +49,7 @@ namespace Elistia.DotNetRtfWriter
         {
         }
 
-        public RtfParagraph(bool allowFootnote, bool allowControlWord,ReadingDirection direction)
+        public RtfParagraph(bool allowFootnote, bool allowControlWord, ReadingDirection direction)
         {
             _text = new StringBuilder();
             _linespacing = -1;
@@ -72,7 +72,7 @@ namespace Elistia.DotNetRtfWriter
         {
 
         }
-        
+
         public StringBuilder Text
         {
             get
@@ -80,7 +80,7 @@ namespace Elistia.DotNetRtfWriter
                 return _text;
             }
         }
-        
+
         public float LineSpacing
         {
             get
@@ -92,7 +92,7 @@ namespace Elistia.DotNetRtfWriter
                 _linespacing = value;
             }
         }
-        
+
         public float FirstLineIndent
         {
             get
@@ -114,7 +114,8 @@ namespace Elistia.DotNetRtfWriter
         {
             get
             {
-                if (_defaultCharFormat == null) {
+                if (_defaultCharFormat == null)
+                {
                     _defaultCharFormat = new RtfCharFormat(-1, -1, _text.Length);
                 }
                 return _defaultCharFormat;
@@ -132,7 +133,7 @@ namespace Elistia.DotNetRtfWriter
                 _startNewPage = value;
             }
         }
-        
+
         public override Align Alignment
         {
             get
@@ -152,7 +153,7 @@ namespace Elistia.DotNetRtfWriter
                 return _margins;
             }
         }
-        
+
         internal override string BlockHead
         {
             set
@@ -183,30 +184,34 @@ namespace Elistia.DotNetRtfWriter
             _charFormats.Add(fmt);
             return fmt;
         }
-        
+
         public RtfCharFormat addCharFormat()
         {
             return addCharFormat(-1, -1);
         }
-        
+
         public RtfFootnote addFootnote(int position)
         {
-            if (!_allowFootnote) {
+            if (!_allowFootnote)
+            {
                 throw new Exception("Footnote is not allowed.");
             }
-            RtfFootnote fnt = new RtfFootnote(position, _text.Length);
+            RtfFootnote fnt = new RtfFootnote(position, _text.Length, ReadingDirection);
             _footnotes.Add(fnt);
             return fnt;
         }
 
         public void addControlWord(int position, RtfFieldControlWord.FieldType type)
         {
-            if (!_allowControlWord) {
+            if (!_allowControlWord)
+            {
                 throw new Exception("ControlWord is not allowed.");
             }
             RtfFieldControlWord w = new RtfFieldControlWord(position, type);
-            for (int i = 0; i < _controlWords.Count; i++) {
-                if (_controlWords[i].Position == w.Position) {
+            for (int i = 0; i < _controlWords.Count; i++)
+            {
+                if (_controlWords[i].Position == w.Position)
+                {
                     _controlWords[i] = w;
                     return;
                 }
@@ -227,25 +232,33 @@ namespace Elistia.DotNetRtfWriter
             // Transform possibly overlapped character format ranges into
             // disjoint ranges.
             // --------------------------------------------------
-            for (int i = 0; i < _charFormats.Count; i++) {
+            for (int i = 0; i < _charFormats.Count; i++)
+            {
                 RtfCharFormat fmt = _charFormats[i];
                 DisjointRange range = null;
-                if (fmt.Begin == -1 && fmt.End == -1) {
+                if (fmt.Begin == -1 && fmt.End == -1)
+                {
                     range = new DisjointRange();
                     range.head = 0;
                     range.tail = _text.Length - 1;
                     range.format = fmt;
-                } else if (fmt.Begin <= fmt.End) {
+                }
+                else if (fmt.Begin <= fmt.End)
+                {
                     range = new DisjointRange();
                     range.head = fmt.Begin;
                     range.tail = fmt.End;
                     range.format = fmt;
-                } else {
+                }
+                else
+                {
                     continue;
                 }
-                if (range.tail >= _text.Length) {
+                if (range.tail >= _text.Length)
+                {
                     range.tail = _text.Length - 1;
-                    if (range.head > range.tail) {
+                    if (range.head > range.tail)
+                    {
                         continue;
                     }
                 }
@@ -253,24 +266,32 @@ namespace Elistia.DotNetRtfWriter
                 List<DisjointRange> delList = new List<DisjointRange>();
                 List<DisjointRange> addList = new List<DisjointRange>();
                 List<DisjointRange> addAnchorList = new List<DisjointRange>();
-                for (int j = 0; j < dranges.Count; j++) {
+                for (int j = 0; j < dranges.Count; j++)
+                {
                     DisjointRange r = dranges[j];
-                    if (range.head <= r.head && range.tail >= r.tail) {
+                    if (range.head <= r.head && range.tail >= r.tail)
+                    {
                         // former range is totally covered by the later
                         //       |--------| r
                         //   |-----------------| range
                         delList.Add(r);
-                    } else if (range.head <= r.head && range.tail >= r.head && range.tail < r.tail) {
+                    }
+                    else if (range.head <= r.head && range.tail >= r.head && range.tail < r.tail)
+                    {
                         // former range is partially covered
                         //          |------------------| r
                         //     |-----------------| range
                         r.head = range.tail + 1;
-                    } else if (range.head > r.head && range.head <= r.tail && range.tail >= r.tail) {
+                    }
+                    else if (range.head > r.head && range.head <= r.tail && range.tail >= r.tail)
+                    {
                         // former range is partially covered
                         //     |------------------| r
                         //          |-----------------| range
                         r.tail = range.head - 1;
-                    } else if (range.head > r.head && range.tail < r.tail) {
+                    }
+                    else if (range.head > r.head && range.tail < r.tail)
+                    {
                         // later range is totally covered by the former
                         //   |----------------------| r
                         //        |---------| range
@@ -284,12 +305,15 @@ namespace Elistia.DotNetRtfWriter
                     }
                 }
                 dranges.Add(range);
-                for (int j = 0; j < delList.Count; j++) {
+                for (int j = 0; j < delList.Count; j++)
+                {
                     dranges.Remove(delList[j]);
                 }
-                for (int j = 0; j < addList.Count; j++) {
+                for (int j = 0; j < addList.Count; j++)
+                {
                     int index = dranges.IndexOf(addAnchorList[j]);
-                    if (index < 0) {
+                    if (index < 0)
+                    {
                         continue;
                     }
                     dranges.Insert(index, addList[j]);
@@ -304,32 +328,42 @@ namespace Elistia.DotNetRtfWriter
             // --------------------------------------------------
             // Build token list from head[] and tail[].
             // --------------------------------------------------
-            for (int i = 0; i < dranges.Count; i++) {
+            for (int i = 0; i < dranges.Count; i++)
+            {
                 DisjointRange r = dranges[i];
                 count = 0;
                 // process head[i]
-                if (r.head == 0) {
+                if (r.head == 0)
+                {
                     Token newTok = new Token();
                     newTok.isControl = true;
                     newTok.text = r.format.renderHead();
                     tokList.AddFirst(newTok);
-                } else {
+                }
+                else
+                {
                     node = tokList.First;
-                    while (node != null) {
+                    while (node != null)
+                    {
                         Token tok = node.Value;
 
-                        if (!tok.isControl) {
+                        if (!tok.isControl)
+                        {
                             count += tok.text.Length;
-                            if (count == r.head) {
+                            if (count == r.head)
+                            {
                                 Token newTok = new Token();
                                 newTok.isControl = true;
                                 newTok.text = r.format.renderHead();
-                                while (node.Next != null && node.Next.Value.isControl) {
+                                while (node.Next != null && node.Next.Value.isControl)
+                                {
                                     node = node.Next;
                                 }
                                 tokList.AddAfter(node, newTok);
                                 break;
-                            } else if (count > r.head) {
+                            }
+                            else if (count > r.head)
+                            {
                                 LinkedListNode<Token> newNode;
                                 Token newTok1 = new Token();
                                 newTok1.isControl = false;
@@ -353,18 +387,23 @@ namespace Elistia.DotNetRtfWriter
                 // process tail[i]
                 count = 0;
                 node = tokList.First;
-                while (node != null) {
+                while (node != null)
+                {
                     Token tok = node.Value;
 
-                    if (!tok.isControl) {
+                    if (!tok.isControl)
+                    {
                         count += tok.text.Length;
-                        if (count - 1 == r.tail) {
+                        if (count - 1 == r.tail)
+                        {
                             Token newTok = new Token();
                             newTok.isControl = true;
                             newTok.text = r.format.renderTail();
                             tokList.AddAfter(node, newTok);
                             break;
-                        } else if (count - 1 > r.tail) {
+                        }
+                        else if (count - 1 > r.tail)
+                        {
                             LinkedListNode<Token> newNode;
                             Token newTok1 = new Token();
                             newTok1.isControl = false;
@@ -390,26 +429,33 @@ namespace Elistia.DotNetRtfWriter
             // --------------------------------------------------
             // Insert footnote into token list.
             // --------------------------------------------------
-            for (int i = 0; i < _footnotes.Count; i++) {
+            for (int i = 0; i < _footnotes.Count; i++)
+            {
                 int pos = _footnotes[i].Position;
-                if (pos >= _text.Length) {
+                if (pos >= _text.Length)
+                {
                     continue;
                 }
-                
+
                 count = 0;
                 node = tokList.First;
-                while (node != null) {
+                while (node != null)
+                {
                     Token tok = node.Value;
-                    
-                    if (!tok.isControl) {
+
+                    if (!tok.isControl)
+                    {
                         count += tok.text.Length;
-                        if (count - 1 == pos) {
+                        if (count - 1 == pos)
+                        {
                             Token newTok = new Token();
                             newTok.isControl = true;
                             newTok.text = _footnotes[i].render();
                             tokList.AddAfter(node, newTok);
                             break;
-                        } else if (count - 1 > pos) {
+                        }
+                        else if (count - 1 > pos)
+                        {
                             LinkedListNode<Token> newNode;
                             Token newTok1 = new Token();
                             newTok1.isControl = false;
@@ -435,26 +481,33 @@ namespace Elistia.DotNetRtfWriter
             // --------------------------------------------------
             // Insert control words into token list.
             // --------------------------------------------------
-            for (int i = 0; i < _controlWords.Count; i++) {
+            for (int i = 0; i < _controlWords.Count; i++)
+            {
                 int pos = _controlWords[i].Position;
-                if (pos >= _text.Length) {
+                if (pos >= _text.Length)
+                {
                     continue;
                 }
 
                 count = 0;
                 node = tokList.First;
-                while (node != null) {
+                while (node != null)
+                {
                     Token tok = node.Value;
 
-                    if (!tok.isControl) {
+                    if (!tok.isControl)
+                    {
                         count += tok.text.Length;
-                        if (count - 1 == pos) {
+                        if (count - 1 == pos)
+                        {
                             Token newTok = new Token();
                             newTok.isControl = true;
                             newTok.text = _controlWords[i].render();
                             tokList.AddAfter(node, newTok);
                             break;
-                        } else if (count - 1 > pos) {
+                        }
+                        else if (count - 1 > pos)
+                        {
                             LinkedListNode<Token> newNode;
                             Token newTok1 = new Token();
                             newTok1.isControl = false;
@@ -476,49 +529,59 @@ namespace Elistia.DotNetRtfWriter
                 }
             }
             #endregion
-            
+
             return tokList;
         }
-        
+
         protected string extractTokenList(LinkedList<Token> tokList)
         {
             LinkedListNode<Token> node;
             StringBuilder result = new StringBuilder();
 
             node = tokList.First;
-            while (node != null) {
-                if (node.Value.isControl) {
+            while (node != null)
+            {
+                if (node.Value.isControl)
+                {
                     result.Append(node.Value.text);
-                } else {
+                }
+                else
+                {
                     result.Append(RtfUtility.unicodeEncode(node.Value.text));
                 }
                 node = node.Next;
             }
             return result.ToString();
         }
-        
+
         public override string render()
         {
             LinkedList<Token> tokList = buildTokenList();
             StringBuilder result = new StringBuilder(_blockHead);
 
-            if (_startNewPage) {
+            if (_startNewPage)
+            {
                 result.Append(@"\pagebb");
             }
-            
-            if (_linespacing >= 0) {
+
+            if (_linespacing >= 0)
+            {
                 result.Append(@"\sl-" + RtfUtility.pt2Twip(_linespacing) + @"\slmult0");
             }
-            if (_margins[Direction.Top] > 0) {
+            if (_margins[Direction.Top] > 0)
+            {
                 result.Append(@"\sb" + RtfUtility.pt2Twip(_margins[Direction.Top]));
             }
-            if (_margins[Direction.Bottom] > 0) {
+            if (_margins[Direction.Bottom] > 0)
+            {
                 result.Append(@"\sa" + RtfUtility.pt2Twip(_margins[Direction.Bottom]));
             }
-            if (_margins[Direction.Left] > 0) {
+            if (_margins[Direction.Left] > 0)
+            {
                 result.Append(@"\li" + RtfUtility.pt2Twip(_margins[Direction.Left]));
             }
-            if (_margins[Direction.Right] > 0) {
+            if (_margins[Direction.Right] > 0)
+            {
                 result.Append(@"\ri" + RtfUtility.pt2Twip(_margins[Direction.Right]));
             }
             //if (_firstLineIndent != 0) {
@@ -527,16 +590,18 @@ namespace Elistia.DotNetRtfWriter
             result.AppendFormat(@"\{0}par", ContentDirection);
             result.Append(AlignmentCode());
             result.AppendLine();
-            
+
             // insert default char format intto the 1st position of _charFormats
-            if (_defaultCharFormat != null) {
+            if (_defaultCharFormat != null)
+            {
                 result.AppendLine(_defaultCharFormat.renderHead());
             }
             result.AppendLine(extractTokenList(tokList));
-            if (_defaultCharFormat != null) {
+            if (_defaultCharFormat != null)
+            {
                 result.Append(_defaultCharFormat.renderTail());
             }
-            
+
             result.AppendLine(_blockTail);
             return result.ToString();
         }

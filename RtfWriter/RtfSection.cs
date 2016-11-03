@@ -47,7 +47,7 @@ namespace Elistia.DotNetRtfWriter
 
         public SectionStartEnd StartEnd { get; private set; }
         public PaperOrientation PageOrientation { get; set; }
-        public RtfSectionFooter SectionFooter { get { return _sectionFooter ?? (_sectionFooter = new RtfSectionFooter(this)); } }
+        public RtfSectionFooter SectionFooter { get { return _sectionFooter ?? (_sectionFooter = new RtfSectionFooter(this, ReadingDirection)); } }
         private int FooterPositionFromPageBottom { get; set; }
 
         /// <summary>

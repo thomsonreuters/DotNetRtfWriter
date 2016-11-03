@@ -92,13 +92,12 @@ namespace RtfWriter.UnitTests
         public void AddSectionInRtfDocumentTest_RTL()
         {
             var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape,
-                new CultureInfo("en-US"));
-            rtfDocument.ReadingDirection = ReadingDirection.RightToLeft;
+                new CultureInfo("ar-AE"));
             var rtfSection = rtfDocument.addSection(SectionStartEnd.Start, rtfDocument);
             var sb = new StringBuilder();
             sb.AppendLine(
                 string.Format(@"{{\sectd\{0}sect\footery{1}\{2}\sftnbj\qd ", RtlContent, "720", "sectdefaultcl"))
-                .AppendLine(@"\pgwsxn0\pghsxn0 \marglsxn0\margrsxn0\margtsxn0\margbsxn0 {\footerr \ltrpar \pard\plain")
+                .AppendLine(@"\pgwsxn0\pghsxn0 \marglsxn0\margrsxn0\margtsxn0\margbsxn0 {\footerr \rtlpar \pard\plain")
                 .AppendLine(@"\par ")
                 .AppendLine()
                 .AppendLine(@"\par")
@@ -301,7 +300,7 @@ namespace RtfWriter.UnitTests
             Assert.AreEqual(rtfParagraph.ReadingDirection, ReadingDirection.LeftToRight);
             Assert.AreEqual(rtfTable.ReadingDirection, ReadingDirection.LeftToRight);
             Assert.AreEqual(rtfTableCell.ReadingDirection, ReadingDirection.LeftToRight);
-           
+
             Assert.AreEqual(rtfSection.ReadingDirection, ReadingDirection.LeftToRight);
         }
         [TestMethod]
@@ -331,12 +330,28 @@ namespace RtfWriter.UnitTests
 
 
         [TestMethod]
+        public void RtfSectionFooterTestWithRightToLeftCulture()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, new CultureInfo("ar-AE"));
+            var rtfSection = rtfDocument.addSection(SectionStartEnd.Start, rtfDocument);
+            Assert.AreEqual(ReadingDirection.RightToLeft, rtfSection.SectionFooter.ReadingDirection);
+        }
+        [TestMethod]
+        public void RtfSectionFooterTestWithLeftToRightCulture()
+        {
+            var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
+            var rtfSection = rtfDocument.addSection(SectionStartEnd.Start, rtfDocument);
+            Assert.AreEqual(ReadingDirection.LeftToRight, rtfSection.SectionFooter.ReadingDirection);
+        }
+
+        [TestMethod]
         public void RtfFooterRendererTest()
         {
             var rtfDocument = new RtfDocument(PaperSize.A4, PaperOrientation.Landscape, Lcid.English);
             AssertHelper.DoesNotThrowException(() => rtfDocument.Footer.render());
 
         }
+
 
     }
 }
