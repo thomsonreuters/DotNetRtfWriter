@@ -55,6 +55,7 @@
       <SourceFiles Include="$(RtfWriter)bin\$(Platform)\$(Configuration)\*.*"  />
     </ItemGroup>
     <Copy DestinationFolder="$(OutputDirectory)" SourceFiles="@(SourceFiles)" />
+    <Copy SourceFiles="$(SolutionDir)LICENSE" DestinationFiles="$(OutputDirectory)$(ProjectName).LICENSE.txt" />
   </Target>
   
   <Target Name="UnitTests">
