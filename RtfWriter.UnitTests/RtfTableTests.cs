@@ -1,159 +1,157 @@
-﻿
+﻿using Elistia.DotNetRtfWriter;
+using NUnit.Framework;
 using System;
 using System.Text;
-using Elistia.DotNetRtfWriter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RtfWriter.UnitTests.Helpers;
 
 namespace RtfWriter.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class RtfTableTests
     {
         private const string RtlContent = "rtl";
         private const string LtrContent = "ltr";
-        [TestMethod]
+        [Test]
         public void CheckDefaultDirectionForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            Assert.AreEqual(rtfTable.ReadingDirection, ReadingDirection.LeftToRight);
+            Assert.AreEqual(ReadingDirection.LeftToRight, rtfTable.ReadingDirection);
         }
 
-        [TestMethod]
+        [Test]
         public void CheckRightDirectionForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             rtfTable.ReadingDirection = ReadingDirection.RightToLeft;
-            Assert.AreEqual(rtfTable.ReadingDirection, ReadingDirection.RightToLeft);
+            Assert.AreEqual(ReadingDirection.RightToLeft, rtfTable.ReadingDirection);
         }
 
-        [TestMethod]
+        [Test]
         public void AllignmentPropertyTestForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             rtfTable.Alignment = Align.Center;
-            Assert.AreEqual(rtfTable.Alignment, Align.Center);
+            Assert.AreEqual(Align.Center, rtfTable.Alignment);
         }
-        [TestMethod]
+
+        [Test]
         public void StartNewPagePropertyTestForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             rtfTable.StartNewPage = false;
-            Assert.AreEqual(rtfTable.StartNewPage, false);
+            Assert.AreEqual(false, rtfTable.StartNewPage);
         }
-        [TestMethod]
+
+        [Test]
         public void RowCountPropertyTestForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            Assert.AreEqual(rtfTable.RowCount, 3);
+            Assert.AreEqual(3, rtfTable.RowCount);
         }
 
-        [TestMethod]
+        [Test]
         public void ColCountPropertyTestForTable()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             rtfTable.StartNewPage = false;
-            Assert.AreEqual(rtfTable.ColCount, 3);
+            Assert.AreEqual(3, rtfTable.ColCount);
         }
 
-        [TestMethod]
+        [Test]
         public void GetCellForTableTest()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             var rtfTableCell = rtfTable.cell(1, 2);
-            Assert.AreEqual(rtfTableCell.ColIndex, 2);
+            Assert.AreEqual(2, rtfTableCell.ColIndex);
         }
 
-        [TestMethod]
+        [Test]
         public void SetColumnWidthForTableTest()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.DoesNotThrowException(() => rtfTable.setColWidth(1, 20));
+            Assert.DoesNotThrow(() => rtfTable.setColWidth(1, 20));
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldThrowExceptionWhenColumnValueIsNegative()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.setColWidth(-1, 20));
+            Assert.Throws<Exception>(() => rtfTable.setColWidth(-1, 20));
         }
 
-        [TestMethod]
+        [Test]
         public void RowHeightForTableTest()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.DoesNotThrowException(() => rtfTable.setRowHeight(1, 20));
+            Assert.DoesNotThrow(() => rtfTable.setRowHeight(1, 20));
         }
 
-        [TestMethod]
+        [Test]
         public void ShouldThrowExceptionWhenRowValueIsNegative()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.setRowHeight(-1, 20));
+            Assert.Throws<Exception>(() => rtfTable.setRowHeight(-1, 20));
         }
 
-        [TestMethod]
+        [Test]
         public void SetRowKeepInSamePageTest()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.DoesNotThrowException(() => rtfTable.setRowKeepInSamePage(1, true));
+            Assert.DoesNotThrow(() => rtfTable.setRowKeepInSamePage(1, true));
         }
-        [TestMethod]
+        [Test]
         public void ShouldThrowExceptionWhenRowKeepInSamePageIsNegative()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.setRowKeepInSamePage(-1, false));
+            Assert.Throws<Exception>(() => rtfTable.setRowKeepInSamePage(-1, false));
         }
 
-        [TestMethod]
+        [Test]
         public void MergeShouldThrowExceptionWhenTopRowIsNegative()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.merge(-1, 2, 3, 3));
+            Assert.Throws<Exception>(() => rtfTable.merge(-1, 2, 3, 3));
         }
 
-        [TestMethod]
+        [Test]
         public void MergeShouldThrowExceptionWhenLeftColumnIsNegative()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.merge(1, -2, 3, 3));
+            Assert.Throws<Exception>(() => rtfTable.merge(1, -2, 3, 3));
         }
 
-        [TestMethod]
+        [Test]
         public void MergeShouldThrowExceptionWhenRowSpanIsLessThanOne()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.merge(1, 2, -2, 3));
+            Assert.Throws<Exception>(() => rtfTable.merge(1, 2, -2, 3));
         }
-        [TestMethod]
+
+        [Test]
         public void MergeShouldThrowExceptionWhenColumnSpanIsLessThanOne()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
-            AssertHelper.Throws<Exception>(() => rtfTable.merge(1, 2, 2, -2));
+            Assert.Throws<Exception>(() => rtfTable.merge(1, 2, 2, -2));
         }
 
-        [TestMethod]
+        [Test]
         public void MergeShouldReturnCellWhenRowSpanAndColSpanAreEqual()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             var rtfTableCell = rtfTable.merge(1, 1, 1, 1);
-            Assert.AreEqual(rtfTableCell.RowIndex, 1);
-            Assert.AreEqual(rtfTableCell.ColIndex, 1);
-
+            Assert.AreEqual(1, rtfTableCell.RowIndex);
+            Assert.AreEqual(1, rtfTableCell.ColIndex);
         }
 
-        [TestMethod]
+        [Test]
         public void MergeInTableTest()
         {
             var rtfTable = new RtfTable(3, 3, 20, 20);
             var rtfTableCell = rtfTable.merge(1, 1, 1, 2);
-            Assert.AreEqual(rtfTableCell.RowIndex, 1);
-            Assert.AreEqual(rtfTableCell.ColIndex, 1);
-
+            Assert.AreEqual(1, rtfTableCell.RowIndex);
+            Assert.AreEqual(1, rtfTableCell.ColIndex);
         }
 
-
-        [TestMethod]
+        [Test]
         public void LTR_TableRendererTests()
         {
             var rtfTable = new RtfTable(1, 2, 20, 20);
@@ -183,22 +181,22 @@ namespace RtfWriter.UnitTests
             rtfTable.setInnerBorder(BorderStyle.Dotted, 1f);
             rtfTable.setOuterBorder(BorderStyle.Single, 2f);
 
+			var expectString = sb.ToString();
+
             for (var i = 0; i < rtfTable.RowCount; i++)
             {
                 for (var j = 0; j < rtfTable.ColCount; j++)
                 {
-                    rtfTable.cell(i, j).addParagraph().setText("CELL " + i.ToString() + "," + j.ToString());
+                    rtfTable.cell(i, j).addParagraph().setText("CELL " + i + "," + j);
                 }
             }
 
             var result = rtfTable.render();
-            var expectString = sb.ToString();
 
             Assert.AreEqual(expectString, result);
-
         }
 
-        [TestMethod]
+        [Test]
         public void RTL_TableRendereTestWithReadingDirectionRightToLeft()
         {
             var rtfTable = new RtfTable(1, 2, 20, 20, ReadingDirection.RightToLeft);
@@ -227,6 +225,8 @@ namespace RtfWriter.UnitTests
             rtfTable.Margins[Direction.Bottom] = 20;
             rtfTable.setInnerBorder(BorderStyle.Dotted, 1f);
             rtfTable.setOuterBorder(BorderStyle.Single, 2f);
+			
+			var expectString = sb.ToString();
 
             for (var i = 0; i < rtfTable.RowCount; i++)
             {
@@ -237,13 +237,11 @@ namespace RtfWriter.UnitTests
             }
 
             var result = rtfTable.render();
-            var expectString = sb.ToString();
 
             Assert.AreEqual(expectString, result);
-
         }
 
-        [TestMethod]
+        [Test]
         public void RTL_TableRendereTestWithReadingDirectionLeftToRight()
         {
             var rtfTable = new RtfTable(1, 2, 20, 20, ReadingDirection.LeftToRight);
@@ -271,7 +269,9 @@ namespace RtfWriter.UnitTests
 
             rtfTable.Margins[Direction.Bottom] = 20;
             rtfTable.setInnerBorder(BorderStyle.Dotted, 1f);
-            rtfTable.setOuterBorder(BorderStyle.Single, 2f);
+			rtfTable.setOuterBorder(BorderStyle.Single, 2f);
+
+			var expectString = sb.ToString();
 
             for (var i = 0; i < rtfTable.RowCount; i++)
             {
@@ -282,11 +282,8 @@ namespace RtfWriter.UnitTests
             }
 
             var result = rtfTable.render();
-            var expectString = sb.ToString();
 
             Assert.AreEqual(expectString, result);
-
         }
-
     }
 }

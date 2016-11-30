@@ -1,95 +1,89 @@
-﻿using System;
+﻿using Elistia.DotNetRtfWriter;
+using NUnit.Framework;
+using System;
 using System.Text;
-using Elistia.DotNetRtfWriter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RtfWriter.UnitTests.Helpers;
 
 namespace RtfWriter.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class RtfParagraphTests
     {
         private const string RtlContent = "rtl";
         private const string LtrContent = "ltr";
-        [TestMethod]
+
+        [Test]
         public void CheckDefaultDirectionForParagraph()
         {
             var rtfParagraph = new RtfParagraph(true, true);
-            Assert.AreEqual(rtfParagraph.ReadingDirection, ReadingDirection.LeftToRight);
-
+            Assert.AreEqual(ReadingDirection.LeftToRight, rtfParagraph.ReadingDirection);
         }
 
-        [TestMethod]
+        [Test]
         public void CheckRightDirectionForParagraph()
         {
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.ReadingDirection = ReadingDirection.RightToLeft;
 
-            Assert.AreEqual(rtfParagraph.ReadingDirection, ReadingDirection.RightToLeft);
-
+            Assert.AreEqual(ReadingDirection.RightToLeft, rtfParagraph.ReadingDirection);
         }
 
-        [TestMethod]
+        [Test]
         public void AddCharFormatForParagraphWithoutBeginandEnd()
         {
             var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.setText(text);
-            var charFormat = rtfParagraph.addCharFormat();
-            Assert.AreEqual(rtfParagraph.Text.Length, text.Length);
+			var charFormat = rtfParagraph.addCharFormat();
+			Assert.AreEqual(text.Length, rtfParagraph.Text.Length);
             Assert.IsNotNull(charFormat);
         }
 
-        [TestMethod]
+        [Test]
         public void TestDefaultCharFormatProperty()
         {
             var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.setText(text);
-            AssertHelper.DoesNotThrowException(() => { var defaultCharformat = rtfParagraph.DefaultCharFormat; });
-
+            Assert.DoesNotThrow(() => { var defaultCharformat = rtfParagraph.DefaultCharFormat; });
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestLineSpacingPropertySet()
         {
             var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.LineSpacing = 2;
             rtfParagraph.setText(text);
-            Assert.AreEqual(rtfParagraph.LineSpacing, 2);
-
+            Assert.AreEqual(2, rtfParagraph.LineSpacing);
         }
-        [TestMethod]
+
+        [Test]
         public void TestFirstLineIndentPropertySet()
         {
             var text = "Test Paragraph";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.FirstLineIndent = 2;
             rtfParagraph.setText(text);
-            Assert.AreEqual(rtfParagraph.FirstLineIndent, 2);
-
+            Assert.AreEqual(2, rtfParagraph.FirstLineIndent);
         }
-        [TestMethod]
+
+        [Test]
         public void TestStartNewPagePropertySet()
         {
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.StartNewPage = false;
-            Assert.AreEqual(rtfParagraph.StartNewPage, false);
-
+            Assert.AreEqual(false, rtfParagraph.StartNewPage);
         }
 
-        [TestMethod]
+        [Test]
         public void TestMarginPropertyGet()
         {
             var rtfParagraph = new RtfParagraph(true, true);
             Assert.IsNotNull(rtfParagraph.Margins);
-
         }
 
-
-        [TestMethod]
+        [Test]
         public void AddCharFormatForParagraph()
         {
             var text = "Test Paragraph";
@@ -99,61 +93,57 @@ namespace RtfWriter.UnitTests
             rtfParagraph.StartNewPage = false;
             rtfParagraph.setText(text);
             var charFormat = rtfParagraph.addCharFormat(1, 6);
-            Assert.AreEqual(rtfParagraph.Text.Length, text.Length);
+            Assert.AreEqual(text.Length, rtfParagraph.Text.Length);
             Assert.IsNotNull(charFormat);
         }
-        [TestMethod]
+
+        [Test]
         public void AddFootNoteForParagraph()
         {
             var text = "Test FootNote";
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.setText(text);
-            AssertHelper.DoesNotThrowException(() => rtfParagraph.addFootnote(1));
-
-
+            Assert.DoesNotThrow(() => rtfParagraph.addFootnote(1));
         }
-        [TestMethod]
+
+        [Test]
         public void AddControlWordForParagraph()
         {
-
             var rtfParagraph = new RtfParagraph(true, true);
 
-            AssertHelper.DoesNotThrowException(() => rtfParagraph.addControlWord(1, RtfFieldControlWord.FieldType.Page));
-
+            Assert.DoesNotThrow(() => rtfParagraph.addControlWord(1, RtfFieldControlWord.FieldType.Page));
         }
 
-        [TestMethod]
+        [Test]
         public void BuildTokenListTest()
         {
             var rtfParagraph = new RtfParagraph(true, true, ReadingDirection.LeftToRight);
             rtfParagraph.setText("Test Token Method");
             rtfParagraph.addCharFormat(-1, -1);
-            AssertHelper.DoesNotThrowException(() => rtfParagraph.render());
-
+            Assert.DoesNotThrow(() => rtfParagraph.render());
         }
 
-        [TestMethod]
+        [Test]
         public void BuildTokenListTestForTotalParagraph()
         {
             var text = "Test Token Method";
             var rtfParagraph = new RtfParagraph(true, true, ReadingDirection.LeftToRight);
             rtfParagraph.setText(text);
             rtfParagraph.addCharFormat(0, text.Length - 1);
-            AssertHelper.DoesNotThrowException(() => rtfParagraph.render());
-
+            Assert.DoesNotThrow(() => rtfParagraph.render());
         }
 
-        [TestMethod]
+        [Test]
         public void GenerateExceptionWhenEnd_GreaterThanOrEqualTo_TextLength()
         {
             var text = "Test Token Method";
             int end = text.Length;
             var rtfParagraph = new RtfParagraph(true, true, ReadingDirection.LeftToRight);
             rtfParagraph.setText(text);
-            AssertHelper.Throws<Exception>(() => rtfParagraph.addCharFormat(0, text.Length));
+            Assert.Throws<Exception>(() => rtfParagraph.addCharFormat(0, text.Length));
         }
 
-        [TestMethod]
+        [Test]
         public void LTR_ParagraphRender()
         {
             var textPara = "Test Paragraph";
@@ -167,14 +157,12 @@ namespace RtfWriter.UnitTests
 
             var rtfParagraph = new RtfParagraph(true, true);
             rtfParagraph.setText(textPara);
-            var result = rtfParagraph.render();
-            Assert.AreEqual(result, expectString);
-
+			var result = rtfParagraph.render();
+			Assert.AreEqual(expectString, result);
         }
 
 
-        [TestMethod]
-
+        [Test]
         public void RTL_ParagraphRender()
         {
             var textPara = "Test Paragraph";
@@ -190,11 +178,7 @@ namespace RtfWriter.UnitTests
             rtfParagraph.ReadingDirection = ReadingDirection.RightToLeft;
             rtfParagraph.setText(textPara);
             var result = rtfParagraph.render();
-            Assert.AreEqual(result, expectString);
-
+			Assert.AreEqual(expectString, result);
         }
-
     }
-
-
 }
