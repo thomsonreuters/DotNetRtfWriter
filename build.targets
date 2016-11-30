@@ -10,16 +10,21 @@
 
   <!-- Solution directory & file -->
   <ItemGroup>
-    <SolutionDir Include=".\"></SolutionDir>
+    <BaseDir Include=".\"></BaseDir>
     <DistDir Include="Build\"></DistDir>
   </ItemGroup>
 
   <Target Name="Initialize-Properties">
+    <!-- Solution Dir -->
+    <PropertyGroup>
+      <SolutionDir>%(BaseDir.FullPath)</SolutionDir>
+    </PropertyGroup>
+    
     <!-- Solution & Projects -->
     <PropertyGroup>
-      <Solution>%(SolutionDir.FullPath)$(SolutionName).sln</Solution>
-      <RtfWriter>%(SolutionDir.FullPath)RtfWriter\</RtfWriter>
-      <RtfWriterTests>%(SolutionDir.FullPath)RtfWriter.UnitTests\</RtfWriterTests>
+      <Solution>$(SolutionDir)$(SolutionName).sln</Solution>
+      <RtfWriter>$(SolutionDir)RtfWriter\</RtfWriter>
+      <RtfWriterTests>$(SolutionDir)RtfWriter.UnitTests\</RtfWriterTests>
     </PropertyGroup>
     
     <!-- Build Properties -->
@@ -29,7 +34,7 @@
       <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>      
       <!-- Overwrite to retain the correct value -->      
       <Platform>$(Platform)</Platform> 
-      <Snk>%(SolutionDir.FullPath)$(ProjectName).snk</Snk>
+      <Snk>$(SolutionDir)$(ProjectName).snk</Snk>
     </PropertyGroup>
 
     <!-- Packaging Properties -->
@@ -47,6 +52,7 @@
   </Target>
   
   <Target Name="Build">
+    <NuGetRestore Solution="$(Solution)" />
     <MSBuild Projects="$(Solution)" Properties="Configuration=$(Configuration);Platform=$(Platform);SignAssembly=true;AssemblyOriginatorKeyFile=$(Snk)" />
   </Target>
 
@@ -55,21 +61,7 @@
       <SourceFiles Include="$(RtfWriter)bin\$(Platform)\$(Configuration)\*.*"  />
     </ItemGroup>
     <Copy DestinationFolder="$(OutputDirectory)" SourceFiles="@(SourceFiles)" />
-    <Copy SourceFiles="$(SolutionDir)LICENSE" DestinationFiles="$(OutputDirectory)$(ProjectName).LICENSE.txt" />
-  </Target>
-  
-  <Target Name="UnitTests">
-    <Time Format="yyyy-MM-dd (HH-mm-ss)">
-      <Output TaskParameter="FormattedTime" PropertyName="CurrentDateTime" />
-    </Time>
-
-    <PropertyGroup>
-      <UnitTests>$(RtfWriterTests)\bin\$(Configuration)\RtfWriter.Tests.dll</UnitTests>
-      <UnitTestsResult>%(SolutionDir.FullPath)Test-Results\$(CurrentDateTime).trx</UnitTestsResult>
-    </PropertyGroup>
-
-    <MakeDir Directories="%(SolutionDir.FullPath)Test-Results" />
-    <Exec Command="mstest /testcontainer:$(UnitTests) /resultsfile:&quot;$(UnitTestsResult)&quot;" />
+    <Copy SourceFiles="$(BaseDir)LICENSE" DestinationFiles="$(OutputDirectory)$(ProjectName).LICENSE.txt" />
   </Target>
 
   <Target Name="Distribution" DependsOnTargets="Initialize-Properties; Clean; Build; Copy;">
@@ -104,11 +96,20 @@
 
     <PropertyGroup>
       <UnitTests>$(RtfWriterTests)bin\$(Configuration)\RtfWriter.UnitTests.dll</UnitTests>
-      <UnitTestsResult>%(SolutionDir.FullPath)Test-Results\$(CurrentDateTime).trx</UnitTestsResult>
+      <UnitTestsResult>$(SolutionDir)Test-Results\$(CurrentDateTime).xml</UnitTestsResult>
     </PropertyGroup>
 
-    <MakeDir Directories="%(SolutionDir.FullPath)Test-Results" />
-    <Exec Command="mstest /testcontainer:$(UnitTests) /resultsfile:&quot;$(UnitTestsResult)&quot;" />
+    <NUnit3 Assemblies="$(UnitTests)"
+          Process="Multiple"
+          TestTimeout="2000"
+          Framework="v4.5"
+          Workers="10"
+          EnableShadowCopy="false"
+          ShowLabels="All"
+          NoHeader="true"
+          NoColor="false"
+          Verbose="true"
+          OutputXmlFile="$(UnitTestsResult)"
+          ToolPath="$(SolutionDir)packages\NUnit.ConsoleRunner.3.5.0\tools\"/>
   </Target>
-
 </Project>
